@@ -10,6 +10,9 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 # 화면 타이틀 설정
 pygame.display.set_caption("Bong Hak Game")  # 게임 이름
 
+# FPS
+clock = pygame.time.Clock()
+
 # 배경 이미지 불러오기
 background = pygame.image.load(
     "C:/Users/이봉학/Desktop/코딩/python 나도코딩/pygame/Basic-game-using-pygame/images/background.png")
@@ -30,36 +33,48 @@ to_x_left = 0
 to_x_right = 0
 to_y = 0
 
+# 캐릭터 이동 속도
+character_speed = 0.6
+
 # 프로그램이 종료되지 않도록 대기하도록 만듬
 # 이벤트 루프
 running = True  # 게임이 진행중인가?
 while running:
+    dt = clock.tick(60)  # 게임화면의 초당 프레임 수 설정
+
+    # 캐릭터가 1초 동안 100 만큼 이동을 해야함
+    # 10 fps : 1초 동안 10번 동작 -> 1번에 몇 만큼 이동? 10만큼! 10 * 10 = 100
+    # 20 fps : 1초 동안 20번 동작 -> 1번에 몇 만큼 이동? 5만큼! 5 * 20 = 100
+
+    # print("fps : " + str(clock.get_fps())) # 설정된 프레임 확인
+
     for event in pygame.event.get():
         # pygame을 쓰는데 무조건 필요 / 프로그램이 종료되지 않게하며 사용자의 동작을 확인
         if event.type == pygame.QUIT:  # 창이 닫히는 이벤트 발생?
             running = False  # 게임이 진행중이 아님
 
         if event.type == pygame.KEYDOWN:  # 키가 눌러졌는지 확인
-            # 눌러졌다면 각 방향으로 5px씩 이동
+            # 눌러졌다면 각 방향으로 character speed만큼 이동
             if event.key == pygame.K_LEFT:
-                to_x_left -= 5
+                to_x_left -= character_speed
             elif event.key == pygame.K_RIGHT:
-                to_x_right += 5
+                to_x_right += character_speed
             elif event.key == pygame.K_UP:
-                to_y -= 5
+                to_y -= character_speed
             elif event.key == pygame.K_DOWN:
-                to_y += 5
+                to_y += character_speed
 
-        if event.type == pygame.KEYUP:  # 방향키 때면 멈춤
+        if event.type == pygame.KEYUP:  # 방향키 떼면 멈춤
             if event.key == pygame.K_LEFT:
                 to_x_left = 0
             elif event.key == pygame.K_RIGHT:
                 to_x_right = 0
-            elif event.key == pygame.K_UP or event.type == pygame.K_DOWN:
+            elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 to_y = 0
 
-    character_x_pos += to_x_left + to_x_right
-    character_y_pos += to_y
+    character_x_pos += (to_x_left + to_x_right) * \
+        dt  # 프레임이 변화해도 속도를 일정하게 만들어 주기 위해서
+    character_y_pos += to_y * dt  # 프레임이 변화해도 속도를 일정하게 만들어 주기 위해서
 
     # 가로 경계값 처리
     if character_x_pos < 0:
