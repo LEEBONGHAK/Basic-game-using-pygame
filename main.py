@@ -25,6 +25,10 @@ character_x_pos = screen_width / 2 - \
 character_y_pos = screen_height - \
     character_height  # 화면 세로 크기 가장 아래에 해당하느 곳에 위치(세로)
 
+# 캐릭터가 이동할 좌표
+to_x_left = 0
+to_x_right = 0
+to_y = 0
 
 # 프로그램이 종료되지 않도록 대기하도록 만듬
 # 이벤트 루프
@@ -34,6 +38,40 @@ while running:
         # pygame을 쓰는데 무조건 필요 / 프로그램이 종료되지 않게하며 사용자의 동작을 확인
         if event.type == pygame.QUIT:  # 창이 닫히는 이벤트 발생?
             running = False  # 게임이 진행중이 아님
+
+        if event.type == pygame.KEYDOWN:  # 키가 눌러졌는지 확인
+            # 눌러졌다면 각 방향으로 5px씩 이동
+            if event.key == pygame.K_LEFT:
+                to_x_left -= 5
+            elif event.key == pygame.K_RIGHT:
+                to_x_right += 5
+            elif event.key == pygame.K_UP:
+                to_y -= 5
+            elif event.key == pygame.K_DOWN:
+                to_y += 5
+
+        if event.type == pygame.KEYUP:  # 방향키 때면 멈춤
+            if event.key == pygame.K_LEFT:
+                to_x_left = 0
+            elif event.key == pygame.K_RIGHT:
+                to_x_right = 0
+            elif event.key == pygame.K_UP or event.type == pygame.K_DOWN:
+                to_y = 0
+
+    character_x_pos += to_x_left + to_x_right
+    character_y_pos += to_y
+
+    # 가로 경계값 처리
+    if character_x_pos < 0:
+        character_x_pos = 0
+    elif character_x_pos > screen_width - character_width:
+        character_x_pos = screen_width - character_width
+
+    # 세로 경계값 처리
+    if character_y_pos < 0:
+        character_y_pos = 0
+    elif character_y_pos > screen_height - character_height:
+        character_y_pos = screen_height - character_height
 
     # screen.fill((0, 0, 255)) # RGB를 이용해 배경 넣기
     screen.blit(background, (0, 0))  # 해당하는 좌표에 배경 그리기
