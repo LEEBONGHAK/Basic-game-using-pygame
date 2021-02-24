@@ -10,7 +10,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 # 화면 타이틀 설정
 pygame.display.set_caption("Bong Hak Game")  # 게임 이름
 
-# FPS
+# FPS (frame per second)
 clock = pygame.time.Clock()
 
 # 배경 이미지 불러오기
@@ -35,6 +35,14 @@ to_y = 0
 
 # 캐릭터 이동 속도
 character_speed = 0.6
+
+# 적 enemy 캐릭터
+enemy = pygame.image.load("C:/Users/이봉학/Desktop/코딩/python 나도코딩/pygame/Basic-game-using-pygame/images/enemy.png")
+enemy_size = enemy.get_rect().size # 이미지의 크기를 구해옴
+enemy_width = enemy_size[0] # 캐릭터의 가로 크기
+enemy_height = enemy_size[1] # 캐릭터의 세로 크기
+enemy_x_pos = screen_width / 2 - enemy_width / 2 # 화면 가로의 절반 크기에 해당하는 곳에 위치(가로)
+enemy_y_pos = screen_height /2 - enemy_height / 2 # 화면 세로의 절반 크기에 해당하는 곳에 위치(세로)
 
 # 프로그램이 종료되지 않도록 대기하도록 만듬
 # 이벤트 루프
@@ -88,11 +96,28 @@ while running:
     elif character_y_pos > screen_height - character_height:
         character_y_pos = screen_height - character_height
 
+    # 충돌 처리를 위한 rect 정보 업데이트
+    character_rect = character.get_rect() # 위치가 변화하여도 자체 이미지의 rect 정보는 바뀌지 않았음
+    character_rect.left = character_x_pos # 실제 위치의 rect 정보로 업데이트 해줌
+    character_rect.top = character_y_pos
+
+    enemy_rect = enemy.get_rect()
+    enemy_rect.left = enemy_x_pos
+    enemy_rect.top = enemy_y_pos
+
+    # 충돌 체크
+    if character_rect.colliderect(enemy_rect):
+        print("충돌 했어요")
+        running = False
+
     # screen.fill((0, 0, 255)) # RGB를 이용해 배경 넣기
     screen.blit(background, (0, 0))  # 해당하는 좌표에 배경 그리기
 
     # 캐릭터 그리기
     screen.blit(character, (character_x_pos, character_y_pos))
+
+    # 적 그리기
+    screen.blit(enemy, (enemy_x_pos, enemy_y_pos))
 
     pygame.display.update()  # 게임 화면 다시 그리기
     # pygame에서는 매 프레임 마다 화면을 다시 그려줘야 하기 때문에
